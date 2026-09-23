@@ -1,0 +1,555 @@
+<title>Christopher Hendry</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    /* Dark-first: this is the default palette */
+    --bg: #0a0b0d;
+    --bg-raised: #131519;
+    --bg-raised-2: #1a1d22;
+    --ink: #eef0f2;
+    --ink-soft: #a7adb6;
+    --ink-faint: #6b7178;
+    --rule: rgba(255,255,255,0.10);
+    --rule-soft: rgba(255,255,255,0.06);
+    --accent: #5a93ff;
+    --accent-bright: #85b2ff;
+    --accent-ink: #dbe7ff;
+    --accent-soft: rgba(90,147,255,0.14);
+    --tag-bg: rgba(255,255,255,0.05);
+    --tag-ink: #c3c8d1;
+    --link: #85b2ff;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f7f8fa;
+      --bg-raised: #eef0f3;
+      --bg-raised-2: #e4e7ec;
+      --ink: #14171c;
+      --ink-soft: #4b525a;
+      --ink-faint: #7a8087;
+      --rule: #dde1e6;
+      --rule-soft: #e8ebef;
+      --accent: #2b64e0;
+      --accent-bright: #1d4fc0;
+      --accent-ink: #123a8f;
+      --accent-soft: #e2ebff;
+      --tag-bg: #eef1f5;
+      --tag-ink: #3c434b;
+      --link: #2b64e0;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f7f8fa;
+    --bg-raised: #eef0f3;
+    --bg-raised-2: #e4e7ec;
+    --ink: #14171c;
+    --ink-soft: #4b525a;
+    --ink-faint: #7a8087;
+    --rule: #dde1e6;
+    --rule-soft: #e8ebef;
+    --accent: #2b64e0;
+    --accent-bright: #1d4fc0;
+    --accent-ink: #123a8f;
+    --accent-soft: #e2ebff;
+    --tag-bg: #eef1f5;
+    --tag-ink: #3c434b;
+    --link: #2b64e0;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  ::selection { background: var(--accent-soft); color: var(--accent-ink); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 5rem 1.5rem 6rem; }
+
+  header.hero { margin-bottom: 3.5rem; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.9rem;
+  }
+  h1 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.4rem, 6vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 0.9rem;
+    text-wrap: balance;
+    letter-spacing: -0.03em;
+  }
+  .tagline {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 46ch;
+    text-wrap: balance;
+    margin: 0 0 1.6rem;
+  }
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+  .contact-row span, .contact-row a {
+    padding: 0 1rem;
+    border-left: 1px solid var(--rule);
+  }
+  .contact-row span:first-child, .contact-row a:first-child {
+    padding-left: 0;
+    border-left: none;
+  }
+  .contact-row a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+  .contact-row a:hover { border-bottom-color: var(--link); }
+
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2.4rem 0 0;
+  }
+  .principle {
+    background: var(--bg-raised);
+    padding: 1.1rem 1.15rem;
+  }
+  .principle .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .principle p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+
+  section { margin-top: 4.2rem; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin-bottom: 1.6rem;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.8rem;
+  }
+  .section-head h2 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .section-head .section-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+  }
+
+  .case {
+    padding: 1.8rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .case:last-child { border-bottom: none; }
+  .case-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .case h3 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .case .kind {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .case .summary {
+    color: var(--ink-soft);
+    margin: 0 0 0.9rem;
+    max-width: 62ch;
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.1rem;
+  }
+  .stack span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--tag-bg);
+    color: var(--tag-ink);
+    border: 1px solid var(--rule-soft);
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 0.4rem;
+  }
+  .gallery figure {
+    margin: 0;
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .gallery img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 19.5;
+    object-fit: cover;
+    object-position: top;
+    border-bottom: 1px solid var(--rule);
+    cursor: zoom-in;
+  }
+  .gallery-wide {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .gallery-wide img {
+    aspect-ratio: 16 / 10;
+    object-position: top left;
+  }
+  .gallery figcaption {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .gallery figcaption strong { color: var(--ink); }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(3,4,5,0.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 3vh 2vw;
+    z-index: 50;
+    cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-height: 94vh;
+    max-width: 92vw;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .log { margin: 0; padding: 0; list-style: none; }
+  .log li {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 0.9rem;
+    padding: 0.55rem 0;
+    font-size: 0.93rem;
+    align-items: baseline;
+  }
+  .log li + li { border-top: 1px dashed var(--rule); }
+  .log .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 0.15rem;
+  }
+  .log p { margin: 0; color: var(--ink-soft); }
+  .log strong { color: var(--ink); font-weight: 600; }
+
+  .edu-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .edu-row:last-child { border-bottom: none; }
+  .edu-row .what strong { display: block; font-size: 1rem; font-weight: 600; }
+  .edu-row .what span { color: var(--ink-faint); font-size: 0.85rem; }
+  .edu-row .when {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .grade {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.5rem;
+  }
+
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 2rem; }
+  .skills-grid .group-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+  .skills-grid .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .skills-grid .tags span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    background: var(--tag-bg);
+    border: 1px solid var(--rule-soft);
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  footer {
+    margin-top: 4.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  footer a { color: var(--link); }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 3rem 1.25rem 4rem; }
+    .principles { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .log li { grid-template-columns: 1fr; gap: 0.15rem; }
+    .contact-row span, .contact-row a { border-left: none; padding: 0; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Software Engineering Portfolio</p>
+    <h1>Christopher Hendry</h1>
+    <p class="tagline">First-Class Honours graduate in Computer Games Development who builds live, real-stakes software independently: a multi-broker trading system, a shipped desktop installer, a cross-platform companion app. Verification, not assumption, is the job.</p>
+    <div class="contact-row">
+      <span>Port Glasgow, UK</span>
+      <a href="mailto:Chris-hendry@hotmail.co.uk">Chris-hendry@hotmail.co.uk</a>
+      <span>07377 228490</span>
+      <span>Open to remote / West of Scotland</span>
+    </div>
+
+    <div class="principles">
+      <div class="principle">
+        <span class="num">01</span>
+        <p>Nothing reaches a live or public state without passing a real test against real behaviour: backtests before live trades, on-device runs before "done."</p>
+      </div>
+      <div class="principle">
+        <span class="num">02</span>
+        <p>Bugs get diagnosed from evidence, not guessed at. Every real fix ships with a regression test so it can't silently come back.</p>
+      </div>
+      <div class="principle">
+        <span class="num">03</span>
+        <p>Claims are backed by primary sources: official API docs, live testing, first-hand verification. Not secondhand summaries.</p>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head">
+      <h2>Case studies</h2>
+      <span class="section-note">independent, solo-built unless noted</span>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Live Algorithmic Trading System</h3>
+        <span class="kind">Solo · ongoing, live-money</span>
+      </div>
+      <p class="summary">A continuously-running trading system integrating six real brokerage APIs across equities, FX, and crypto, with an adaptive strategy-selection framework where nothing reaches live trading without first clearing a rigorous backtest gate.</p>
+      <div class="stack">
+        <span>Python</span><span>Alpaca</span><span>Interactive Brokers</span><span>Coinbase</span><span>Kraken</span><span>OANDA</span><span>IG</span><span>Streamlit</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Diagnosed</span><p><strong>Currency-mismatch bug</strong> causing incorrect order sizing on a live account, traced to a data source silently mislabelling one currency as another. Fixed and covered by a dedicated regression test before being trusted again.</p></li>
+        <li><span class="tag">Diagnosed</span><p><strong>Ticker-translation bug</strong> preventing the system from recognising its own open positions after a broker returned asset identifiers in a different format than expected.</p></li>
+        <li><span class="tag">Built</span><p><strong>Supervisor/watchdog architecture</strong> that detects process failures and automatically recovers them, keeping a live, continuously-running system up without manual intervention.</p></li>
+        <li><span class="tag">Verified</span><p>A session-handling limit in a broker's own infrastructure (a live and practice-account connection cannot run concurrently under one login), confirmed by direct, controlled testing rather than accepting the first plausible explanation.</p></li>
+      </ul>
+
+      <div class="gallery gallery-wide">
+        <figure>
+          <img src="screenshots/dashboard-overview.png" alt="Chopper dashboard overview: status tiles, kill switch, last signal, and open positions" loading="lazy">
+          <figcaption>The dashboard's daily-glance view: live status, a one-click kill switch, and the last signal, all on one screen.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/dashboard-open-positions.png" alt="Open positions across every linked brokerage account, live equity and buying power shown per account" loading="lazy">
+          <figcaption>Real, live equity and buying power across every linked account, not a mock-up.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/dashboard-strategy-scanner.png" alt="Strategy scanner configuration screen with an explicit survivorship-bias warning and walk-forward validation option" loading="lazy">
+          <figcaption>The strategy research tool: walk-forward validation built in, and an explicit survivorship-bias warning rather than a number that quietly overstates itself.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/dashboard-accounts.png" alt="Linked brokerage accounts screen showing encrypted credential storage and live account status" loading="lazy">
+          <figcaption>Credentials encrypted at rest via the OS credential store. Going live on an account requires an explicit confirmation, never a default.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Standalone Desktop Installer</h3>
+        <span class="kind">Solo · shipped</span>
+      </div>
+      <p class="summary">Packaged the trading system into a fully standalone Windows installer requiring no separate Python install, the kind of distribution and deployment engineering most junior portfolios don't touch at all.</p>
+      <div class="stack">
+        <span>PyInstaller</span><span>Inno Setup</span><span>Windows packaging</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Found</span><p>Multiple bugs that <strong>only existed in the frozen build</strong>, invisible in source: a UI framework silently 404ing on static assets, and a module-resolution crash. Each root-caused by actually running the compiled executable, not by trusting a clean build.</p></li>
+        <li><span class="tag">Verified</span><p>End to end via a real install → launch → uninstall cycle on a clean machine state, not just a successful compile.</p></li>
+      </ul>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Cross-Platform Mobile Companion App</h3>
+        <span class="kind">Solo</span>
+      </div>
+      <p class="summary">A Flutter/Dart mobile app that reuses the trading system's own validated logic through a live API, so what the user sees never drifts from what was actually tested.</p>
+      <div class="stack">
+        <span>Flutter</span><span>Dart</span><span>Python</span><span>FastAPI</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Diagnosed</span><p>A background task <strong>silently failing on-device</strong> due to initialisation ordering, a class of bug a simulator never surfaced.</p></li>
+        <li><span class="tag">Designed</span><p>Data views that surface genuinely <strong>"unknown" states honestly</strong> rather than guessing at missing data, after finding and fixing a visualisation bug that misrepresented values on an unhandled edge case.</p></li>
+      </ul>
+
+      <div class="gallery">
+        <figure>
+          <img src="screenshots/widget-homescreen.jpg" alt="Datapad home-screen widget showing live signals and daily P&amp;L, on a real Android device" loading="lazy">
+          <figcaption>The <strong>Datapad</strong> home-screen widget: live signals and running daily P&amp;L, glanceable with no app open.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/app-market-open.jpg" alt="Chopper mobile app showing live FX signals while the market is open" loading="lazy">
+          <figcaption>Live signal feed, reusing the trading system's own strategy output through the API, not a re-implementation.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/roster-health.jpg" alt="Roster Health screen showing per-strategy backtest score, win rate, trade count and auto-pause status" loading="lazy">
+          <figcaption>Roster health tracking: real backtest scores, live win rate, and an auto-pause after consecutive losses.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/risk-preset.jpg" alt="Risk preset screen with conservative, moderate and aggressive sizing options and walk-forward test notes" loading="lazy">
+          <figcaption>Risk controls exposed on-device, with the walk-forward numbers behind each preset shown, not hidden.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/protective-exits.jpg" alt="Protective exits screen documenting a walk-forward sweep, noting flatten-before-close lost money in all three test windows" loading="lazy">
+          <figcaption>Honest UI copy, not marketing copy: a tested setting that lost money says so, right where you'd toggle it.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Copy-Trading Signal Engine</h3>
+        <span class="kind">Solo · research-led</span>
+      </div>
+      <p class="summary">Reverse-engineered an undocumented third-party trading API directly from its primary developer docs, then built a signal engine that ranks real traders on a composite, risk-adjusted score before anything is acted on.</p>
+      <div class="stack">
+        <span>Python</span><span>REST APIs</span><span>Statistical scoring</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Built</span><p>A poll/diff engine that tracks a watchlist's real position changes and turns them into structured trading signals.</p></li>
+        <li><span class="tag">Validated</span><p>A sector-concentration hypothesis walk-forward across multiple time windows before it was allowed to influence a live strategy roster, not on a single lucky backtest.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Education</h2></div>
+    <div class="edu-row">
+      <div class="what"><strong>BSc (Hons) Computer Games Development <span class="grade">First Class</span></strong><span>University of the West of Scotland, Paisley</span></div>
+      <div class="when">Sep 2022 – May 2024</div>
+    </div>
+    <div class="edu-row">
+      <div class="what"><strong>HNC &amp; HND Computer Games Development <span class="grade">Grade A</span></strong><span>West College Scotland</span></div>
+      <div class="when">Aug 2020 – Jun 2022</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Core skills</h2></div>
+    <div class="skills-grid">
+      <div>
+        <div class="group-label">Languages</div>
+        <div class="tags"><span>Python</span><span>C++</span><span>C#</span><span>JavaScript</span><span>Dart</span><span>HTML/CSS</span></div>
+      </div>
+      <div>
+        <div class="group-label">Frameworks &amp; engines</div>
+        <div class="tags"><span>FastAPI</span><span>Flutter</span><span>Streamlit</span><span>Unity</span><span>Unreal Engine</span></div>
+      </div>
+      <div>
+        <div class="group-label">Engineering practice</div>
+        <div class="tags"><span>Regression testing</span><span>Live-system debugging</span><span>Git/GitHub</span><span>Agile/Scrum</span></div>
+      </div>
+      <div>
+        <div class="group-label">Applied AI</div>
+        <div class="tags"><span>Claude Code</span><span>Claude API</span><span>OpenAI API</span><span>AI-pair-programmed delivery</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Christopher Hendry · Port Glasgow, Scotland</span>
+    <a href="mailto:Chris-hendry@hotmail.co.uk">Chris-hendry@hotmail.co.uk</a>
+  </footer>
+
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightbox-img" src="" alt=""></div>
+<script>
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  document.querySelectorAll('.gallery img').forEach(img => {
+    img.addEventListener('click', () => {
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      lb.classList.add('open');
+    });
+  });
+  lb.addEventListener('click', () => lb.classList.remove('open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+</script>
