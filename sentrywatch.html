@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sentrywatch — Christopher Hendry</title>
-<meta name="description" content="An open-core Windows process watchdog with a local web dashboard and a Flutter mobile companion app, packaged and released through CI/CD.">
+<meta name="description" content="An open-core Windows process watchdog with a local web dashboard, a Flutter mobile companion app, and an LLM tool-use agent that diagnoses crashes in plain English, packaged and released through CI/CD.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
   <header class="page-header">
     <p class="eyebrow">Case Study</p>
     <h1>Sentrywatch</h1>
-    <p class="tagline">An open-core Windows background-process watchdog: restarts a crashed or unresponsive target automatically, with a local web dashboard and a Flutter mobile companion app for remote monitoring and control, packaged and released through automated CI/CD.</p>
+    <p class="tagline">An open-core Windows background-process watchdog: restarts a crashed or unresponsive target automatically, with a local web dashboard and a Flutter mobile companion app for remote monitoring and control, plus an LLM tool-use agent that turns a raw crash into a plain-English diagnosis — packaged and released through automated CI/CD.</p>
   </header>
 
   <section style="margin-top: 0;">
@@ -95,6 +95,39 @@
         <figure>
           <img src="screenshots/sentrywatch-mobile-connect.jpg" alt="Sentrywatch mobile app's pairing screen for connecting to the desktop tool" loading="lazy">
           <figcaption>Pairing: a short-lived one-time code exchanged for a long-lived token, stored securely on-device.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>AI Incident Copilot</h3>
+        <span class="kind">Solo · LLM tool-use agent, shipped</span>
+      </div>
+      <p class="summary">An LLM agent with real tool-use access to Sentrywatch's own REST API: given a down watch, it investigates with live tool calls and answers in plain English — what likely went wrong, and one concrete next step.</p>
+      <div class="stack">
+        <span>Python</span><span>Ollama</span><span>TypeScript</span><span>React</span><span>SQLite</span><span>REST API</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Built</span><p>An agent that calls <strong>real endpoints</strong> — <strong>list_watches</strong>, <strong>get_watch_log</strong> — against a live running service and reasons over the actual response, not a chatbot wrapped around a static system prompt. The same crash that used to be just a red dot and an exit code now gets a diagnosis and a next step.</p></li>
+        <li><span class="tag">Designed</span><p>Strictly <strong>read-only by construction</strong>: the agent can investigate a crash but never restart anything itself — that stays a separate, human-triggered, PIN-gated action. The boundary between "diagnose" and "act" that any production on-call agent needs, enforced in the code, not just the prompt.</p></li>
+        <li><span class="tag">Designed</span><p>Every diagnosis — success or failure — written to a <strong>SQLite audit trail</strong>: what was asked, which tools ran, what came back, why it failed when it did. Governance for an autonomous agent, treated as a feature, not an afterthought.</p></li>
+        <li><span class="tag">Built</span><p>The <strong>same agent loop reused against two differently-shaped APIs</strong>: the desktop dashboard's and the phone's own, separately-authenticated mobile API — one set of tools, two real clients, normalized behind a common interface.</p></li>
+        <li><span class="tag">Verified</span><p>Tested live end-to-end on all three surfaces, not just reviewed: a real local model (Ollama — kept free during development on purpose, no per-call API cost while iterating on the tool-calling loop), a real crashing process, and for the mobile path a real Android emulator driven over adb, pairing code and all.</p></li>
+      </ul>
+
+      <div class="gallery">
+        <figure>
+          <img src="screenshots/sentrywatch-dashboard-diagnose.png" alt="Sentrywatch dashboard showing an AI-generated plain-English diagnosis for a down watch" loading="lazy">
+          <figcaption>One click: raw crash output becomes a diagnosis and a next step.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/sentrywatch-dashboard-incidents.png" alt="Sentrywatch incident-timeline page built in React and TypeScript, showing past AI diagnoses with an expandable tool-call trace" loading="lazy">
+          <figcaption>A dedicated React + TypeScript view of the agent's history — what it checked, not just what it concluded.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/sentrywatch-mobile-diagnose.png" alt="Sentrywatch mobile app showing the same AI diagnosis, reached through the phone's own separately-authenticated API" loading="lazy">
+          <figcaption>The same copilot, reachable from the phone through a completely separate API.</figcaption>
         </figure>
       </div>
     </div>
