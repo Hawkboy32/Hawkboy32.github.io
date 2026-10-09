@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Backtester — Christopher Hendry</title>
-<meta name="description" content="A continuously-running multi-broker trading system, its shipped Windows installer, and a copy-trading signal engine built on top of it.">
+<meta name="description" content="A continuously-running multi-broker trading system, its shipped Windows installer, a copy-trading signal engine, and a LangGraph multi-agent daily briefing built on top of it.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -61,6 +61,30 @@
         <figure>
           <img src="screenshots/dashboard-accounts.png" alt="Linked brokerage accounts screen showing encrypted credential storage and live account status" loading="lazy">
           <figcaption>Credentials encrypted at rest via the OS credential store. Going live on an account requires an explicit confirmation, never a default.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Multi-Agent Daily Briefing</h3>
+        <span class="kind">Solo · LangGraph, read-only, shipped</span>
+      </div>
+      <p class="summary">A real multi-agent system orchestrated with LangGraph: two data-gathering agents run in parallel — today's trading activity, and real live risk/exposure across every linked broker account — and fan into a writer agent that turns both into a plain-English daily briefing. Strictly read-only: no node can place, modify, or cancel an order.</p>
+      <div class="stack">
+        <span>Python</span><span>LangGraph</span><span>Claude API</span><span>Ollama</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Built</span><p>A genuine <strong>fan-out/fan-in graph</strong>, not a linear script dressed up as one: two independent agents gather activity and risk data in parallel, then both feed a single writer agent — verified against the installed LangGraph version's real current API before writing the real nodes.</p></li>
+        <li><span class="tag">Designed</span><p>The <strong>risk agent is the only node that reaches outside the machine</strong> — real authenticated broker connections, read-only snapshot and position calls only. One broker's connection failing is isolated to that account's own error field rather than taking the whole run down.</p></li>
+        <li><span class="tag">Verified</span><p>Run live against all 10 real linked broker accounts, not a staged demo: two genuine pre-existing account errors surfaced correctly as isolated per-account failures, and the writer's summary named every real number and flag accurately.</p></li>
+        <li><span class="tag">Found</span><p>Running the real writer against the <strong>real Claude API</strong> caught something the local-model version didn't: a mismatch between a risk breaker's recorded reason text and the account's actual current equity, flagged as worth checking instead of repeated silently — a specific, concrete difference, not a generic "better prose" claim.</p></li>
+      </ul>
+
+      <div class="gallery gallery-single">
+        <figure>
+          <img src="screenshots/backtester-daily-briefing.jpg" alt="Terminal output of the real multi-agent daily briefing run against live broker accounts, with the Claude-generated briefing flagging a real data discrepancy" loading="lazy">
+          <figcaption>A real run against live accounts — the briefing itself caught a data discrepancy worth checking, unprompted.</figcaption>
         </figure>
       </div>
     </div>
