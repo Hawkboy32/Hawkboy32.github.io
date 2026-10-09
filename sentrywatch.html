@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sentrywatch — Christopher Hendry</title>
-<meta name="description" content="An open-core Windows process watchdog with a local web dashboard, a Flutter mobile companion app, and an LLM tool-use agent that diagnoses crashes in plain English, packaged and released through CI/CD.">
+<meta name="description" content="An open-core Windows process watchdog with a local web dashboard, a Flutter mobile companion app, an LLM tool-use agent that diagnoses crashes in plain English, and a Model Context Protocol server exposing it all to Claude — packaged and released through CI/CD.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
   <header class="page-header">
     <p class="eyebrow">Case Study</p>
     <h1>Sentrywatch</h1>
-    <p class="tagline">An open-core Windows background-process watchdog: restarts a crashed or unresponsive target automatically, with a local web dashboard and a Flutter mobile companion app for remote monitoring and control, plus an LLM tool-use agent that turns a raw crash into a plain-English diagnosis — packaged and released through automated CI/CD.</p>
+    <p class="tagline">An open-core Windows background-process watchdog: restarts a crashed or unresponsive target automatically, with a local web dashboard and a Flutter mobile companion app for remote monitoring and control, an LLM tool-use agent that turns a raw crash into a plain-English diagnosis, and a Model Context Protocol server that exposes it all to Claude Desktop and Claude Code directly — packaged and released through automated CI/CD.</p>
   </header>
 
   <section style="margin-top: 0;">
@@ -128,6 +128,30 @@
         <figure>
           <img src="screenshots/sentrywatch-mobile-diagnose.png" alt="Sentrywatch mobile app showing the same AI diagnosis, reached through the phone's own separately-authenticated API" loading="lazy">
           <figcaption>The same copilot, reachable from the phone through a completely separate API.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Model Context Protocol Server</h3>
+        <span class="kind">Solo · MCP server, shipped</span>
+      </div>
+      <p class="summary">A real MCP server over the official SDK, so Claude Desktop, Claude Code, or any other MCP client can check on a Sentrywatch-supervised machine directly — a thin protocol layer over the same REST API and AI copilot built above, not a second implementation of either.</p>
+      <div class="stack">
+        <span>Python</span><span>Model Context Protocol</span><span>stdio transport</span><span>REST API</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Found</span><p>A <strong>real SDK breaking change</strong> mid-build: the installed <strong>mcp</strong> package had renamed its whole server API (<strong>FastMCP</strong> → <strong>MCPServer</strong>) in a major version bump since the pattern was last documented. Caught by actually importing the package and reading its own error message — which named the exact migration guide — rather than trusting a remembered API shape.</p></li>
+        <li><span class="tag">Designed</span><p><strong>Read-only by construction, the same discipline as the copilot itself</strong>: four tools exposed — <strong>list_watches</strong>, <strong>get_watch_log</strong>, <strong>diagnose_watch</strong>, <strong>get_diagnoses</strong> — every one explicitly annotated read-only per the real MCP spec. Restart and config-editing tools deliberately left out, not forgotten, because neither of the two existing restart endpoints' authorization model (a per-launch desktop token, a paired-device token plus a PIN) extends cleanly to a long-lived MCP client session without its own real design pass.</p></li>
+        <li><span class="tag">Built</span><p>A genuinely <strong>thin client, not a second supervisor</strong>: the server adds no new way to reach Sentrywatch's data — it reuses the dashboard/mobile REST clients and the AI copilot's own diagnosis function directly, so the whole feature is mostly glue around code that already existed and was already tested.</p></li>
+        <li><span class="tag">Verified</span><p>Tested with a <strong>real MCP client</strong>, not a mock — a genuine client process spawned the real server over a real stdio transport and called every tool against a live dashboard instance, including a real diagnosis call that reached the actual local model and returned a correct, non-hallucinated answer.</p></li>
+      </ul>
+
+      <div class="gallery gallery-wide">
+        <figure>
+          <img src="screenshots/sentrywatch-mcp-server.jpg" alt="Terminal transcript of a real MCP client connecting to the Sentrywatch MCP server, listing its four read-only tools, and calling diagnose_watch to get a real AI diagnosis" loading="lazy">
+          <figcaption>A real MCP client session: connect, list the four read-only tools, call diagnose_watch, get back a real diagnosis.</figcaption>
         </figure>
       </div>
     </div>
