@@ -117,6 +117,8 @@
         <li><span class="tag">Built</span><p>A second, real <strong>Anthropic Claude adapter</strong> alongside the original Ollama path — a genuinely different request shape (content blocks and typed tool-use IDs, not flat OpenAI-style messages), not a config swap — plus a real <strong>eval suite</strong> that scores actual model output against 15 scenarios instead of only mocked unit tests.</p></li>
         <li><span class="tag">Found</span><p>Running that eval suite against both providers surfaced a <strong>real, reproducible model-quality gap</strong>: the free local model consistently misreports a currently-healthy watch as down when a stale failure field is present — Claude never does. Also caught a bug in the eval's own grading rubric: three "failures" turned out to be Claude being <em>more</em> transparent than the local model, not less correct — fixed the rubric, not the model, after reading the actual transcripts rather than trusting the score.</p></li>
         <li><span class="tag">Verified</span><p>Tested live end-to-end on all three surfaces, not just reviewed: a real local model (Ollama — kept free during development on purpose, no per-call API cost while iterating on the tool-calling loop) and the real Claude API, a real crashing process, and for the mobile path a real Android emulator driven over adb, pairing code and all.</p></li>
+        <li><span class="tag">Found</span><p>The Claude adapter existed for two releases before anything in the shipped app could actually reach it — no CLI flag, MCP parameter, or dashboard control ever passed <strong>provider="claude"</strong> through; it was dev/eval-script-only. Wired it through for real: a provider dropdown on the dashboard, a parameter on the MCP tool, a query param on the REST endpoint.</p></li>
+        <li><span class="tag">Verified</span><p>Confirmed live against a real running dashboard, not mocked: switched the dropdown to Claude and watched the real Anthropic SDK's own authentication error flow cleanly through the whole chain — SDK → agent loop → REST response → UI error panel — with no crash anywhere, then re-confirmed the default Ollama path still worked unchanged.</p></li>
       </ul>
 
       <div class="gallery">
@@ -135,6 +137,10 @@
         <figure>
           <img src="screenshots/sentrywatch-copilot-eval-comparison.jpg" alt="Terminal output of the real eval suite run against both Ollama and the Claude API, showing 13/15 and 15/15 respectively with specific failure reasons" loading="lazy">
           <figcaption>Real eval scores, both providers — the local model's one reproducible failure doesn't reproduce on Claude.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/sentrywatch-provider-selector.jpg" alt="Sentrywatch dashboard with a provider dropdown set to Claude, showing the real Anthropic SDK's own authentication error surfaced cleanly in the UI" loading="lazy">
+          <figcaption>Live-verified, not just mocked: the dropdown works, and the real SDK's own error flows cleanly to the UI.</figcaption>
         </figure>
       </div>
     </div>
