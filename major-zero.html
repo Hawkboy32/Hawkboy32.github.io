@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Major Zero — Christopher Hendry</title>
+<meta name="description" content="An AI operations assistant I built as a product and run as its first user: a multi-agent orchestrator that answers on a local model and escalates to the cloud only when it must, speaks the Model Context Protocol in both directions, can act on real systems only through a policy and a human approval, hosts permissions for Claude Code, signs approvals with a phone fingerprint, and is red-teamed with measured results.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="brand" href="index.html">Christopher Hendry</a>
+    <a href="backtester.html">Backtester</a>
+    <a href="sentrywatch.html">Sentrywatch</a>
+    <a href="docs-assistant.html">docs-assistant</a>
+    <a href="major-zero.html" class="active">Major Zero</a>
+    <a href="mobile-app.html">Mobile App</a>
+    <a href="widget.html">Widget</a>
+    <a href="games-development.html">Games Development</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="page-header">
+    <p class="eyebrow">Case Study</p>
+    <h1>Major Zero</h1>
+    <p class="tagline">An AI operations assistant I built as a product and run as its first user. It routes a plain-English request to the right capability, answers on a free local model and escalates to the cloud only when the local answer is weak, and speaks the Model Context Protocol in both directions. The hard part was letting it act: every change is a proposal that a policy checks, a person approves and a queue executes once — and I attacked it myself to measure how well that holds.</p>
+  </header>
+
+  <section style="margin-top: 0;">
+
+    <div class="case">
+      <div class="case-head">
+        <h3>A Multi-Agent Assistant Over Real Systems</h3>
+        <span class="kind">Solo · multi-agent assistant, verified live</span>
+      </div>
+      <p class="summary">One assistant that answers questions from several real projects' documentation, checks the health of live background services over a real protocol, runs read-only backtests, and shows how a live trading system is doing — on a local-first brain, with every call traced and a golden eval suite gating each change.</p>
+      <div class="stack">
+        <span>Python</span><span>LangGraph</span><span>MCP</span><span>RAG</span><span>Ollama</span><span>Claude API</span><span>OpenTelemetry</span><span>SQLite</span><span>Streamlit</span><span>Evals</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Built</span><p>A <strong>multi-agent orchestrator</strong> as a real <code>LangGraph</code> graph — a router node classifies the request, dispatches it to one capability, and a synthesiser composes the answer — with every dependency injected into the graph instead of stored in its state, so the whole thing tests deterministically against fakes.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>local-first brain</strong>: every answer runs on a free local model first, is scored against a rubric, and only escalates to the Claude API when that score says the local answer is weak. Both attempts are recorded as real <code>OpenTelemetry</code> spans, so cost, latency and quality per call read straight out of the trace.</p></li>
+        <li><span class="tag">Built</span><p>A real <strong>MCP client</strong>: Major Zero speaks the Model Context Protocol over stdio to a <em>separate</em> MCP server — my own background-process watchdog's — and calls its read-only tools to report live service health, rather than importing that project's internals. <span class="tag">Found</span> the server returns a list result as <code>structured_content</code> with one text block <em>per item</em>, so the client has to read the structured content, not <code>content[0]</code> — which at first silently collapsed a three-item list to one.</p></li>
+        <li><span class="tag">Measured</span><p>A <strong>golden eval suite</strong> that scores the whole assistant — routing, refusals, grounded answers, injection, approvals, memory, mail — against a real model, gating on the required scenarios. It grew from 12 to <strong>36</strong> as capabilities were added, and all 36 pass on the local model today, with 2 known-weak cases tracked in the open rather than hidden. It earned its place at once by catching the router matching the hint <code>watch</code> <em>inside</em> <code>watched</code>, fixed with whole-word matching and a deterministic (temperature-0) classifier.</p></li>
+        <li><span class="tag">Found</span><p>By measuring the model rather than assuming it: Ollama's default 4,096-token window <strong>silently dropped the system prompt</strong> when a prompt overflowed it — a model told to reply with exactly one word chatted normally instead, and obeyed again at a larger window. That prompt is where the injection defence lives, so a long enough tool result would have removed it with no error. The old character-count estimate was up to 2× too low on logs and numbers.</p></li>
+        <li><span class="tag">Fixed</span><p>A <strong>token budget</strong> that sends the window size on every request and refuses a prompt that cannot fit (never trimmed inside a fenced block, and never escalated to the cloud just because it is long), plus <strong>loop guards</strong> for the tool-using agent: a reply cut off mid-JSON gets its own message, the same call asked twice is not run twice, and an A-B-A-B ping-pong is stopped.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>dashboard that works as a handler's console</strong>: the assistant sits in the middle and its sections — Ask, Today, Approvals, Memory, Reminders, Audit, Trace, Capabilities — orbit it, driven from the real stores (an amber slot per approval that is waiting, with its time left). The same dashboard has a <strong>guided demo</strong> on a fictional company that replays recorded real runs with no model, or runs them live in a throwaway state, so it can be shown without touching anything of mine.</p></li>
+        <li><span class="tag">Built</span><p>Read-only <strong>views of my other systems</strong> as capabilities: a project ledger that checks each repo (clean, unpushed, overdue commitment) and says <em>unknown</em> when it cannot know; the state of my strategy research lab; and how a live trading system is doing, read from its own records with the database opened read-only and no broker credentials anywhere near the assistant.</p></li>
+      </ul>
+
+      <div class="gallery gallery-wide">
+        <figure>
+          <img src="screenshots/major-zero-core.jpg" alt="Major Zero's dashboard front page in its demo mode: the assistant at the centre of a ring with eight sections orbiting it, and a strip of live telemetry beneath" style="aspect-ratio: 4 / 3;" loading="lazy">
+          <figcaption>The dashboard's front page, in demo mode on a fictional company: the assistant at the centre, its sections around it.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/major-zero-evals.jpg" alt="Major Zero's dashboard showing the eval scorecard: 36 of 36 required scenarios passed and 2 of 2 known-weak, generated 24 October 2026" loading="lazy">
+          <figcaption>The eval scorecard from a run on the local model — 36/36 required scenarios passing, the known-weak cases tracked separately.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Letting an Agent Act, Safely</h3>
+        <span class="kind">Solo · propose → approve → execute</span>
+      </div>
+      <p class="summary">A read-only assistant is safe because it cannot do anything, which also makes it a reporter. The core of this project is making <em>doing more</em> safe: a capability never acts, it proposes; a policy decides; a person approves; a persistent queue executes. Every property below has a test that fails without it.</p>
+      <div class="stack">
+        <span>Python</span><span>SQLite</span><span>Policy engine</span><span>Audit trail</span><span>Concurrency testing</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Designed</span><p>A <strong>policy</strong> that turns every proposed action into allow, ask or deny, from what the action <em>does</em> rather than what it is called: a tool with no annotation counts as a write, because a hint is not a guarantee. The approval queue is persistent, so a request made in the terminal can be approved from the dashboard or a phone later.</p></li>
+        <li><span class="tag">Verified</span><p><strong>At-most-once execution</strong> by an atomic claim on the queue row, proven with <strong>8 threads racing to approve one request</strong> (exactly one runs), and <strong>the policy re-checked at execution time</strong>, not only when the request was made, so what was safe when proposed is checked again at the moment it would run.</p></li>
+        <li><span class="tag">Built</span><p><strong>Protected resources</strong> — the live trading stack and its supervisors — are refused outright, even after an approval click; reading them stays fine. Destructive actions need a typed confirmation of the target and can never be approved from a phone.</p></li>
+        <li><span class="tag">Built</span><p>An <strong>autonomy dial</strong> per capability (observe / ask / standing) that only a person can change, and <strong>standing permissions</strong> that are deliberately narrow: one exact action on one exact target, at most 8 hours and 50 uses, never for a protected target, a destructive action or an email send. A covered request goes through the same approval path as a click, so the audit trail looks the same.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>dedicated mailbox</strong> where email is data and never an instruction: messages are shown as plain text, never opened for attachments, sends go only to an allowlist and only through an approval, and no model writes outgoing mail. Verified on a real account, including a hostile "forward everything" message that was flagged rather than obeyed.</p></li>
+      </ul>
+
+      <div class="gallery gallery-wide">
+        <figure>
+          <img src="screenshots/major-zero-approval.jpg" alt="A recorded run in Major Zero's demo: the request 'restart label-printer' is queued for approval instead of executed, the approval is given, the pretend restart runs once, and the audit trail lists proposed, approved, executed" style="aspect-ratio: 4 / 3;" loading="lazy">
+          <figcaption>A change is a proposal, then a decision, then a record. Demo mode: the restart is a pretend one on a fictional service.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Permissions for Claude Code, and a Phone That Signs Approvals</h3>
+        <span class="kind">Solo · MCP server, Flutter app, real devices</span>
+      </div>
+      <p class="summary">The same approval path serves other agents and other devices: Major Zero is the permission host for Claude Code sessions, and a Flutter app lets me approve from my phone with a fingerprint — with the rule that voice, the other way of talking to it, can never approve anything.</p>
+      <div class="stack">
+        <span>MCP</span><span>Claude Code hooks</span><span>Flutter</span><span>Kotlin</span><span>ECDSA / Android Keystore</span><span>On-device speech</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Built</span><p>An <strong>MCP tool for Claude Code's permission prompt</strong>: each tool call is classified (only what is provably read-only is allowed; destructive commands need a typed confirmation; the live trading stack is denied), changes wait in the queue for me, and a rejection, a timeout or any internal error is a deny. A <strong>PreToolUse hook</strong> does the same for interactive sessions and <em>fails closed</em> — Claude Code lets a call proceed when a hook fails in most ways, so the hook is built to exit with the one code that blocks.</p></li>
+        <li><span class="tag">Found</span><p>With a <strong>real Claude Code session</strong> asking, the host's reply to an approved write was rejected as an invalid result. Every earlier test had used the MCP client library, which accepts more than the real client does: the SDK adds structured content and an output schema that Claude Code refuses. Fixed by turning structured output off and pinning the exact reply with a test that speaks raw JSON-RPC over stdio.</p></li>
+        <li><span class="tag">Verified</span><p>A second real run, for under a cent: the write waited for me and was approved, the delete waited and was <strong>rejected, and nothing ran</strong>, and the session reported the refusal itself. The audit trail reads proposed, asked, approved, executed — and proposed, asked, rejected, denied.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>Flutter companion app</strong> (chat, notices, project ledger, approvals) whose approvals are signed by a <strong>hardware-backed key behind a fingerprint</strong>: I confirm the key's fingerprint at the PC once, every approval gets a single-use 60-second challenge bound to a hash of the exact action, and the server re-checks that action is still the same before it counts the signature. Live-tested on a Samsung phone against a demo server.</p></li>
+        <li><span class="tag">Built</span><p><strong>Push-to-talk voice</strong> with on-device recognition only — there is deliberately no fallback to a recogniser that sends audio to a server — and the transcript goes to the same server as typed text, so every rule applies unchanged. Voice can ask and be answered; an approval spoken aloud is refused with nothing decided.</p></li>
+        <li><span class="tag">Found</span><p>By using it on the real phone: the spoken project card read its bracketed status tags and file hashes aloud, and was cut off before the lines that mattered. Fixed by counting the fine lines ("5 items are fine") and speaking only what needs a look; a 75-word card that was truncated became 48 words, complete.</p></li>
+      </ul>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Red-Teaming My Own Agent</h3>
+        <span class="kind">Solo · measured with confidence intervals</span>
+      </div>
+      <p class="summary">I built a red-team kit that attacks my own assistant and ran it against the real thing — guard, router, policy, approval queue, memory and model — in a throwaway state. Attacks are judged by their <em>effects</em> first (an approval that should not exist, a memory written, a tool that should not be reachable) and by wording second, and each is run repeatedly so a rate comes with an interval.</p>
+      <div class="stack">
+        <span>Python</span><span>Prompt injection</span><span>OWASP LLM Top 10</span><span>Wilson intervals</span><span>Eval suites</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Found</span><p>Real defects, not theoretical ones: a poisoned runbook section addressed to the AI <strong>was obeyed</strong> (an attacker token echoed back), another asked for a tracking image and the answer carried a markdown image whose URL contained the user's question, and the read-only MCP tool answered "restart this" and "approve that" as <em>questions</em>. Nothing changed, but its own description promised a refusal.</p></li>
+        <li><span class="tag">Fixed</span><p>Documents are now fenced like tool output, lines addressed to an AI are removed before the model sees them (and the answer says so), remote images are stripped from every answer, and a request to change something is refused in so many words before any capability sees it. <strong>Re-measured at 0 of 10</strong> for each, and a held-out image attack went 10 of 10 with the strip switched off, so that layer is what holds.</p></li>
+        <li><span class="tag">Found</span><p>An instruction hidden in an <strong>HTML comment</strong> made the answer carry the attacker's code in <strong>3 of 5</strong> trials (60%, 95% interval 23–88%). A reader of the rendered page never sees a comment; the model reads the raw text. The principle behind the fix: show the model what a person would see. After: <strong>0 of 10</strong> (interval 0–28%).</p></li>
+        <li><span class="tag">Found</span><p>Characters a person cannot see but a model can read — the Unicode tag block spells ASCII invisibly — went through every cleaner I had. Fixed everywhere text from elsewhere is shown or fed on, including the phone app; a second bug turned up while writing the test, because the instruction scanner ran <em>before</em> the strip, so "Ig&lt;zero-width&gt;nore all previous instructions" slipped past it.</p></li>
+        <li><span class="tag">Measured</span><p>A customer-facing <strong>support desk</strong> that answers only from public help pages and hands money, security, legal and "get me a person" to a human without drafting an answer. Keyword triage missed <strong>47 of 50</strong> unseen messages that needed a person; concept patterns alone still missed 37 of 50 (they scored 100% on the set they were tuned on — a defence tuned on what you have seen proves little); adding a local model's second opinion that can <em>only raise</em> an escalation cut that to <strong>1 of 50</strong>, at a measured cost of 3 of 20 ordinary questions being handed over too.</p></li>
+        <li><span class="tag">Documented</span><p>The <strong>residuals, published rather than hidden</strong>: paraphrased injections still work on the 8B local model (a polite phrasing 7 times in 10, a "house rule" 2 in 10), and a command planted in service output is relayed in about 6% of trials over one route. A scanner and a fence only slow a small model down. The exposure is wrong text, because nothing can change anything without a person.</p></li>
+      </ul>
+    </div>
+
+    <div class="case" style="border-bottom: none;">
+      <div class="case-head">
+        <h3>Seeing a Live Trading System Without Touching It</h3>
+        <span class="kind">Solo · read-only by construction</span>
+      </div>
+      <p class="summary">Folding my trading system's daily briefing into the assistant raised the question of what the assistant should be allowed to reach. I read the briefing project's code before reusing it, and decided from what it does.</p>
+      <ul class="log">
+        <li><span class="tag">Found</span><p>The briefing's risk step opens <strong>real authenticated connections to every linked broker account</strong>, and its activity step calls a helper that runs a schema script and a migration on the live trades database and commits — a write path I would never have chosen for something that is supposed to look. Both were fine in a script I run by hand; neither belongs in an assistant that talks to a model.</p></li>
+        <li><span class="tag">Designed</span><p>The assistant instead reads <strong>three local files and one table</strong> — the trader's status, the two breaker files, and closed trades — with the database opened read-only twice over (file mode and connection mode), no broker connection and no credentials, no model call (the report is composed by code so a figure cannot be reworded into a different one), and account ids shown only as short prefixes. Profit and loss is summed <em>per account</em>, never across them, because they are in different currencies and nothing converts them.</p></li>
+        <li><span class="tag">Verified</span><p>Tests that fail if any of it changes: the database and every file stay byte-identical with the same modification times and no journal file appears; an INSERT and a CREATE both fail on its connection; a fresh interpreter importing it loads no trading or broker module. Then a run over the real records, where the 24-hour figure matched a hand count from the database. It raises a told-once notice for a stale heartbeat, a stopped trader, a new error or a tripped breaker, and is deliberately not offered to the phone or to other agents.</p></li>
+      </ul>
+    </div>
+
+  </section>
+
+  <footer>
+    <span>Christopher Hendry · Port Glasgow, Scotland</span>
+    <a href="mailto:Chris-hendry@hotmail.co.uk">Chris-hendry@hotmail.co.uk</a>
+  </footer>
+
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightbox-img" src="" alt=""></div>
+<script src="script.js"></script>
+</body>
+</html>

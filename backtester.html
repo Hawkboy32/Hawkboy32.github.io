@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Backtester — Christopher Hendry</title>
-<meta name="description" content="A continuously-running multi-broker trading system, its shipped Windows installer, a copy-trading signal engine, and a LangGraph multi-agent daily briefing built on top of it.">
+<meta name="description" content="A continuously-running multi-broker trading system, its shipped Windows installer, a copy-trading signal engine, a LangGraph multi-agent daily briefing built on top of it, and a strategy lab where agents propose and measure and a person promotes.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,6 +15,7 @@
     <a href="backtester.html" class="active">Backtester</a>
     <a href="sentrywatch.html">Sentrywatch</a>
     <a href="docs-assistant.html">docs-assistant</a>
+    <a href="major-zero.html">Major Zero</a>
     <a href="mobile-app.html">Mobile App</a>
     <a href="widget.html">Widget</a>
     <a href="games-development.html">Games Development</a>
@@ -87,6 +88,27 @@
           <figcaption>A real run against live accounts — the briefing itself caught a data discrepancy worth checking, unprompted.</figcaption>
         </figure>
       </div>
+    </div>
+
+    <div class="case">
+      <div class="case-head">
+        <h3>Strategy Lab: Agents That Propose and Measure, a Person Promotes</h3>
+        <span class="kind">Solo · pre-registered experiments, read-only toward the live system</span>
+      </div>
+      <p class="summary">Research tooling for improving the live system's strategies where the agents can never write to it: they propose experiments and measure them on cached data, off-hours and at low priority, and a person decides what is promoted. It is built around one problem — any search that keeps the winner overfits — so most of the work is the rules a result has to pass, and testing that those rules themselves are not fooled.</p>
+      <div class="stack">
+        <span>Python</span><span>Statistical testing</span><span>SQLite (read-only)</span><span>Ollama</span><span>Mutation testing</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Designed</span><p><strong>Pre-registration</strong>: an experiment's plan (settings, tickers, windows, costs, baselines) is hashed and written down before anything runs, and an edited plan is refused. Costs are on by default, a result is compared with doing nothing and with the live setting, and a hold-out window can be scanned <strong>once</strong>, behind an exclusive lock, only for a result that already passed training. The only verdicts are reject, inconclusive and candidate — "worth paper trading, not ready for live money".</p></li>
+        <li><span class="tag">Found</span><p>My first selection test <strong>leaked</strong>: simulated on pure noise it passed 16% of the time with 20 settings and 41% with 5. I replaced it with a test that measures the noise of a setting's average from the data itself and demands the winner beat the 97.5th percentile of the best of N — then measured it: 2.5% false passes at 20 settings, 0.2% at 5, while a real edge six noise-widths wide still passed 98% of the time.</p></li>
+        <li><span class="tag">Found</span><p>Reading the first real experiment: <strong>4 of its 16 settings could never trade</strong>. A price cannot sit more than (n−1)/√n sample standard deviations from the mean of its own n-bar window, so a band wider than that never triggers — a quarter of the compute spent on nothing, and a "best of 16" message that should have said 12. Fixed in the rules and the reviewer; the lesson is now a check before any grid is registered.</p></li>
+        <li><span class="tag">Found</span><p>The real run finished every scan and then <strong>crashed writing its verdict</strong>: the real scanner's rows carry numpy numbers, comparing them gives numpy booleans, and JSON cannot write those — while my test fakes only ever returned plain floats. Fixed, tested with numpy rows, and resumed from the saved progress with no rescan.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>drift check</strong> that compares the closed trades read from the live database (opened read-only) with the same strategy replayed on the same cached bars, matching trades within 15 minutes and flagging a difference only with at least 10 pairs and a z-score of 2.5. It then <strong>attributes the trades the bot did not take</strong> to the roster's own rules: about two-thirds happened while the pair was benched or paused, a few while a position was already open, and 31% are <em>unexplained</em> — kept as an open question rather than explained away. The paired trades themselves showed no evidence of drift.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>skeptic</strong> whose criticisms are computed by code (fragile peak, edge of the grid, thin trades, costs margin, luck, baselines), with a local model allowed only to phrase them and every figure in its wording checked against the data. <span class="tag">Measured</span> the wording anyway: it passed the figure check six times in six but misread meaning (4 basis points earned against a 4 basis point cost became "a loss of 2"), so the label says the figures are verified and the wording is not.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>scout</strong> that drafts the next experiment from a finished one — extend a grid whose winner sits on an edge, on tickers no earlier experiment used, or a single confirmatory test while the hold-out is unspent — and never registers or runs anything. Running it on the real experiments found its own flaw: a winner on the edge of one grid was the middle of another's, so an edge is now judged against everything already tried. A mutation pass left 13 of 39 mutants alive and closed the real gaps, including a test that shared a folder with every earlier run and hid a write.</p></li>
+        <li><span class="tag">Verified</span><p>On three real experiments: a rejection (luck explained the best setting), a narrow rejection (the same setting won again but missed the luck margin), and a pre-registered confirmatory run on new tickers that earned the lab's first <strong>candidate</strong> — read as a small, consistent edge that trades twice as often and so is more exposed to real costs, not as a result to act on. Starting an experiment or recording a candidate is an approval in my assistant's queue; promoting a strategy is still my action, in the trading dashboard.</p></li>
+      </ul>
     </div>
 
     <div class="case">

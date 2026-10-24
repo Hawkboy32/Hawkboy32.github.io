@@ -20,7 +20,7 @@ A static personal portfolio site for Christopher Hendry (software engineering, f
 
 ### Shared nav (duplicated markup — update every file)
 
-Every one of the 7 top-level `.html` files repeats the identical nav block near the top of `<body>`:
+Every one of the 8 top-level `.html` files repeats the identical nav block near the top of `<body>`:
 
 ```html
 <nav class="site-nav">
@@ -29,13 +29,14 @@ Every one of the 7 top-level `.html` files repeats the identical nav block near 
     <a href="backtester.html">Backtester</a>
     <a href="sentrywatch.html">Sentrywatch</a>
     <a href="docs-assistant.html">docs-assistant</a>
+    <a href="major-zero.html">Major Zero</a>
     <a href="mobile-app.html">Mobile App</a>
     <a href="widget.html">Widget</a>
     <a href="games-development.html">Games Development</a>
   </div>
 </nav>
 ```
-The only difference per file is which link carries `class="active"`. **There is no shared include/template** — if you add, remove, or rename a project page, you must hand-edit this exact block in all 7 files (`index.html`, `backtester.html`, `sentrywatch.html`, `docs-assistant.html`, `mobile-app.html`, `widget.html`, `games-development.html`). It is easy to update 6 and forget one; grep for `site-nav-inner` to check you got all of them.
+The only difference per file is which link carries `class="active"`. **There is no shared include/template** — if you add, remove, or rename a project page, you must hand-edit this exact block in all 8 files (`index.html`, `backtester.html`, `sentrywatch.html`, `docs-assistant.html`, `major-zero.html`, `mobile-app.html`, `widget.html`, `games-development.html`). It is easy to update 7 and forget one; grep for `site-nav-inner` to check you got all of them.
 
 ### Case-study page pattern
 
@@ -53,7 +54,7 @@ Each project page (everything except `index.html`) follows the same structure. L
 
 ### Screenshots (`screenshots/`)
 
-All 26 images live flat in `screenshots/` (no subfolders), named `<project>-<thing>.png`/`.jpg` (e.g. `sentrywatch-dashboard-overview.png`, `docs-assistant-eval.jpg`). I found no `CLAUDE_NOTES.txt` or similar convention file in this repo — the convention below is inferred from the images' own `alt` text, which is explicit about it: several captions/alt strings say things like *"Terminal output of the real eval suite run against both Ollama and the Claude API..."* and *"Terminal transcript of a real MCP client connecting to the Sentrywatch MCP server..."*. So: the terminal-style screenshots (`.jpg` files mostly) are **real captured program output, rendered as styled HTML and then screenshotted in a browser** — not fabricated/mocked-up terminal graphics. The `.png` files are mostly real app/dashboard UI screenshots. If you add a new screenshot, keep following this real-output-only rule; don't invent a fake terminal render.
+All 29 images live flat in `screenshots/` (no subfolders), named `<project>-<thing>.png`/`.jpg` (e.g. `sentrywatch-dashboard-overview.png`, `docs-assistant-eval.jpg`). I found no `CLAUDE_NOTES.txt` or similar convention file in this repo — the convention below is inferred from the images' own `alt` text, which is explicit about it: several captions/alt strings say things like *"Terminal output of the real eval suite run against both Ollama and the Claude API..."* and *"Terminal transcript of a real MCP client connecting to the Sentrywatch MCP server..."*. So: the terminal-style screenshots (`.jpg` files mostly) are **real captured program output, rendered as styled HTML and then screenshotted in a browser** — not fabricated/mocked-up terminal graphics. The `.png` files are mostly real app/dashboard UI screenshots. If you add a new screenshot, keep following this real-output-only rule; don't invent a fake terminal render.
 
 ### `styles.css` theming
 
@@ -64,22 +65,25 @@ All 26 images live flat in `screenshots/` (no subfolders), named `<project>-<thi
 
 ## File/directory map
 
-- `index.html` — home page: hero/intro, the 6-card project grid linking to every case study, education, and core-skills grid.
-- `backtester.html` — case study: the live multi-broker trading system ("Chopper"), its LangGraph daily briefing, the desktop installer, and the copy-trading signal engine.
+- `index.html` — home page: hero/intro, the 7-card project grid linking to every case study, education, and core-skills grid.
+- `backtester.html` — case study: the live multi-broker trading system ("Chopper"), its LangGraph daily briefing, the strategy lab (pre-registered experiments; agents propose and measure, a person promotes), the desktop installer, and the copy-trading signal engine.
 - `sentrywatch.html` — case study: the Windows watchdog + dashboard, its Flutter mobile companion app, the AI incident copilot, and the MCP server.
 - `docs-assistant.html` — case study: the hybrid-retrieval RAG assistant over the other projects' own docs.
+- `major-zero.html` — case study: Major Zero, the AI operations assistant (multi-agent orchestrator and evals; propose → approve → execute; Claude Code permission host and fingerprint-signed phone approvals; the red-team results; reading a live trading system read-only). Its three screenshots are of the DEMO-mode dashboard (a fictional company), so nothing personal is on the page.
 - `mobile-app.html` — case study: the Flutter companion app that reuses the trading system's backend via API.
 - `widget.html` — case study: the Android (Jetpack Glance) home-screen widget ("Datapad") and its silent-freeze bug.
 - `games-development.html` — case study: the university games-development portfolio (Unreal dissertation prototype, Unity group FPS, Unity platformer); video embeds instead of screenshots.
 - `styles.css` — the only stylesheet; every page links it. Theming, layout, and all component styles (nav, cards, case blocks, gallery, lightbox) live here.
 - `script.js` — tiny, single-purpose: wires up the lightbox click-to-zoom/Escape-to-close behavior for `.gallery img` elements. Nothing else.
-- `screenshots/` — flat folder of 26 images referenced by the case-study pages (see convention above).
+- `screenshots/` — flat folder of 29 images referenced by the case-study pages (see convention above).
 
 ## Gotchas
 
-- **Nav duplication**: updating the site nav (adding/renaming/reordering a project) means hand-editing the same markup block in all 7 HTML files — there's no templating. See "Shared nav" above.
+- **Nav duplication**: updating the site nav (adding/renaming/reordering a project) means hand-editing the same markup block in all 8 HTML files — there's no templating. See "Shared nav" above.
 - **Each page's `<meta name="description">` is hand-written and drifts.** `index.html`'s went two projects stale (it omitted Sentrywatch, docs-assistant and the widget until it was rewritten 2026-10-10). When a project page is added, or a case study's content changes materially, update that page's description and `index.html`'s — it should name every project that has a card.
 - **A page's text has to match what its screenshots show.** `widget.html` kept calling the widget "Datapad" after the app renamed it to "Chopper", because its real phone screenshot still showed the old name; both were changed together on 2026-10-10 when a new screenshot arrived. If something is renamed in an app, the page waits for a real screenshot of the new name — don't change the text alone.
 - **`<code>` vs `<strong>`** in `.log` entries: `<strong>` wraps emphasized phrases/findings in prose (e.g. "a **packaging defect**..."); `<code>` is reserved for literal technical tokens — function/class/endpoint names, filenames, exact strings (e.g. `Column`, `adb logcat`, `provider="claude"`, `FastMCP` → `MCPServer`, `=== date: title ===`). Keep that distinction when adding new log entries.
+- **Numbers on `major-zero.html` are dated measurements, not constants** (the eval is 36/36 as of 2026-10-24 on the local model; the red-team figures are from the rounds described there). When Zero's eval count or a red-team result changes, change the page AND retake the scorecard screenshot together.
+- **Never put trading specifics on a public page**: no strategy settings, account ids, profit figures or live positions. `backtester.html` describes the lab's methods and measured defects only.
 - No README or other notes file exists in this repo currently — this CLAUDE.md is the only map.
 - **Nothing here updates itself when a project ships something.** Each case-study page is hand-written about a sibling repo (`../backtester`, `../sentrywatch`, `../Mobile_App`, `docs-assistant`); `../CLAUDE_NOTES.txt` is the workspace index of those projects and where each one's own map and history live.
