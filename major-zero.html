@@ -127,7 +127,7 @@
       </ul>
     </div>
 
-    <div class="case" style="border-bottom: none;">
+    <div class="case">
       <div class="case-head">
         <h3>Seeing a Live Trading System Without Touching It</h3>
         <span class="kind">Solo · read-only by construction</span>
@@ -137,6 +137,26 @@
         <li><span class="tag">Found</span><p>The briefing's risk step opens <strong>real authenticated connections to every linked broker account</strong>, and its activity step calls a helper that runs a schema script and a migration on the live trades database and commits — a write path I would never have chosen for something that is supposed to look. Both were fine in a script I run by hand; neither belongs in an assistant that talks to a model.</p></li>
         <li><span class="tag">Designed</span><p>The assistant instead reads <strong>three local files and one table</strong> — the trader's status, the two breaker files, and closed trades — with the database opened read-only twice over (file mode and connection mode), no broker connection and no credentials, no model call (the report is composed by code so a figure cannot be reworded into a different one), and account ids shown only as short prefixes. Profit and loss is summed <em>per account</em>, never across them, because they are in different currencies and nothing converts them.</p></li>
         <li><span class="tag">Verified</span><p>Tests that fail if any of it changes: the database and every file stay byte-identical with the same modification times and no journal file appears; an INSERT and a CREATE both fail on its connection; a fresh interpreter importing it loads no trading or broker module. Then a run over the real records, where the 24-hour figure matched a hand count from the database. It raises a told-once notice for a stale heartbeat, a stopped trader, a new error or a tripped breaker, and is deliberately not offered to the phone or to other agents.</p></li>
+      </ul>
+    </div>
+
+    <div class="case" style="border-bottom: none;">
+      <div class="case-head">
+        <h3>An Assistant That Looks Around, Quietly</h3>
+        <span class="kind">Solo · supervised service, tested on real hardware</span>
+      </div>
+      <p class="summary">An assistant you have to ask is only half useful, so Major Zero now runs as a supervised background service: it looks at the systems around it, tells me about a new problem once, and writes a morning briefing. The design problem was the reverse of the usual one. It had to stay quiet, stay read-only, and fail loudly instead of silently.</p>
+      <div class="stack">
+        <span>Python</span><span>SQLite</span><span>Windows registry</span><span>Toast notifications</span><span>ntfy</span><span>Process supervision</span>
+      </div>
+      <ul class="log">
+        <li><span class="tag">Built</span><p>A <strong>heartbeat</strong> that looks at its sources every 15 minutes inside my active hours, with no model call of its own. A problem is told <em>once</em> by a stable key, again only if it goes away and comes back (or an alert is still there six hours later), behind a flood guard and quiet hours, and each morning it writes a briefing. A source that fails three checks in a row becomes a notice of its own, so a dead input cannot pass for "all healthy".</p></li>
+        <li><span class="tag">Built</span><p>A separate <strong>camera and microphone watchdog</strong> that reads Windows' own usage history and tells a live session from a stale record left by a program that crashed holding the device (a real 2023 entry on my machine looks live by its timestamps alone). Zero reads only the two files it writes, and a findings tracker only through a read-only connection that never touches the evidence column.</p></li>
+        <li><span class="tag">Verified</span><p>On real hardware: I opened the Windows Camera app, the watchdog logged it within a poll as not on my allowlist, Zero reported it, and the end of the session was recorded. Then I <strong>killed all four of its supervised processes on purpose</strong> and the supervisor brought each back within two minutes with fresh state.</p></li>
+        <li><span class="tag">Found</span><p>The pop-up alerts had been <strong>hidden by Do Not Disturb</strong>; they were in the notification list all along. A security alert that a mode can silence needs a second route, so I added phone push, off until I set a topic, and by default it sends one fixed sentence ("Something needs you") instead of the alert's own words.</p></li>
+        <li><span class="tag">Found</span><p>By test, before it was switched on: my first push message took the alert's <em>first line</em> after folding the line breaks together, so a second line, which in the test held an account id, would have been sent to a third-party server. Fixed by taking the first line before anything is joined. A second defect, a console window flashing with every alert when run without one, was fixed test-first in both the watchdog and Zero.</p></li>
+        <li><span class="tag">Measured</span><p>A <strong>stale document index silently cost retrieval quality</strong>: recall@5 on my 12-question eval had fallen from 100% to 92% as the documents changed, with nothing to say so. A re-index restored 100% and 58% rank-1 exactly; the index now records a fingerprint of every file it read, and Zero tells me when any of them has changed.</p></li>
+        <li><span class="tag">Built</span><p>A <strong>daily backup</strong> of its own state and its neighbours': databases are copied with SQLite's online-backup call from a read-only connection and the copy is integrity-checked, a day is built out of sight and swapped in whole so a crash never leaves a half-made one looking complete, and the only thing it ever deletes is an old day's folder by strict date name. The honest limit is that the copies sit on the same disk, so they guard against a bad edit, not a dead drive.</p></li>
       </ul>
     </div>
 
